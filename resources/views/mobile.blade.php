@@ -90,7 +90,7 @@ function mulaiPolling(){
             if(myData.status === 'completed'){
                 document.getElementById('result').innerHTML =
                     "<span class='text-blue-600 text-2xl'>Layanan Selesai</span><br><br>"
-                    + "Terima kasih 🙏";
+                    + "Terima kasih ";
 
                 resetApp();
             }
