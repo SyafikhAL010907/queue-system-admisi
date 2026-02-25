@@ -86,7 +86,7 @@
         function panggilAntrian(nama, nomor, loket) {
             // 🔍 DYNAMIC LANGUAGE CHECK (Anti-Amnesia)
             const currentLang = localStorage.getItem('queue_lang') || 'ID';
-            
+
             // Anti-Double Voice Guard
             window.speechSynthesis.cancel();
 
@@ -124,10 +124,10 @@
 
                 if (currentLang === 'EN') {
                     chosenVoice = voices.find(v => v.lang.toLowerCase().includes("en-us") && (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural")))
-                                 || voices.find(v => v.lang.toLowerCase().includes("en-us"));
+                        || voices.find(v => v.lang.toLowerCase().includes("en-us"));
                 } else if (currentLang === 'ZH') {
                     chosenVoice = voices.find(v => v.lang.toLowerCase().includes("zh-cn") && (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural")))
-                                 || voices.find(v => v.lang.toLowerCase().includes("zh-cn"));
+                        || voices.find(v => v.lang.toLowerCase().includes("zh-cn"));
                 } else {
                     const idVoices = voices.filter(v => v.lang.toLowerCase().includes("id-id") || v.lang.toLowerCase().includes("id_id"));
                     chosenVoice = idVoices.find(v => {
@@ -141,10 +141,11 @@
 
                 if (chosenVoice) {
                     utterance.voice = chosenVoice;
-                    console.log(`V5.1 Engine Dashboard: [${currentLang}] Selected -`, chosenVoice.name);
+                    console.log(`V5.1 Remote Dashboard: [${currentLang}] Command Synced ->`, chosenVoice.name);
                 }
 
-                window.speechSynthesis.speak(utterance);
+                // SILENT REMOTE MODE (V5.1): Dashboard does not speak locally.
+                // window.speechSynthesis.speak(utterance);
             };
 
             if (window.speechSynthesis.getVoices().length > 0) {

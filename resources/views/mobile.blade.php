@@ -191,10 +191,10 @@
 
                 if (chosenVoice) {
                     utterance.voice = chosenVoice;
-                    console.log(`V5.1 Engine Mobile: [${currentLang}] Selected -`, chosenVoice.name);
+                    console.log(`V5.1 Silent Mobile: [${currentLang}] Command Synced ->`, chosenVoice.name);
                 }
 
-                window.speechSynthesis.speak(utterance);
+                // window.speechSynthesis.speak(utterance);
             };
 
             if (window.speechSynthesis.getVoices().length > 0) {

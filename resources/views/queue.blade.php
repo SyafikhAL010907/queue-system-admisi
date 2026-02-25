@@ -14,25 +14,10 @@
     </x-slot>
 
     <style>
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98) translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
     </style>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 fade-in">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <!-- STATS COUNTER -->
             <div id="stats" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center"></div>
@@ -115,7 +100,7 @@
                         if (q.status === 'completed' || q.status === 'canceled') return;
 
                         html += `
-                    <tr class="hover:bg-purple-50/50 transition duration-300 group fade-in">
+                    <tr class="hover:bg-purple-50/50 transition duration-300 group">
                         <td class="p-5 text-gray-500">${i + 1}</td>
                         <td class="p-5 font-bold text-purple-700">${q.queue_number}</td>
                         <td class="p-5 font-medium">${q.name}</td>
@@ -295,10 +280,10 @@
 
                 if (chosenVoice) {
                     utterance.voice = chosenVoice;
-                    console.log(`V5.1 Engine Queue: [${currentLang}] Selected -`, chosenVoice.name);
+                    console.log(`V5.1 Silent Queue: [${currentLang}] Command Synced ->`, chosenVoice.name);
                 }
 
-                window.speechSynthesis.speak(utterance);
+                // window.speechSynthesis.speak(utterance);
             };
 
             if (window.speechSynthesis.getVoices().length > 0) {
@@ -312,6 +297,15 @@
         updateLangUI(activeLang);
 
         function callQueue(id, name, number, loket) {
+            // 🤖 SMART AUTO-OPEN (V5.6)
+            const lastHeartbeat = localStorage.getItem('display_heartbeat');
+            const isDisplayActive = lastHeartbeat && (Date.now() - lastHeartbeat < 3000);
+
+            if (!isDisplayActive) {
+                console.log("V5.6 Smart Auto-Open: Display inactive, opening new tab...");
+                window.open('/display', '_blank');
+            }
+
             fetch('/api/queues')
                 .then(res => res.json())
                 .then(data => {
@@ -331,6 +325,9 @@
                         body: JSON.stringify({ loket: loket })
                     })
                         .then(() => {
+                            // 🚀 SYNC TRIGGER (V5.5): Force Display Speaker to bark instantly
+                            localStorage.setItem('call_trigger', Date.now());
+
                             speakQueue(name, number, loket);
                             Swal.fire({
                                 title: 'Dipanggil!',
