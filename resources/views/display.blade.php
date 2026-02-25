@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Queue Display</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,168 +11,265 @@
         }
 
         @keyframes pop {
-            0% { transform: scale(0.7); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
-<body class="bg-black text-white min-h-screen p-10">
+<body class="bg-gradient-to-br from-purple-50 via-white to-blue-50 text-gray-800 min-h-screen p-6 md:p-10 font-sans">
 
-<h1 class="text-4xl text-center mb-6 tracking-widest">
-    LAYAR ANTRIAN
-</h1>
+    <div class="max-w-7xl mx-auto">
+        <h1
+            class="text-4xl md:text-5xl font-black text-center mb-10 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
+            LAYAR ANTRIAN ADMISI
+        </h1>
 
-<!-- ================= CURRENT CALL BANNER ================= -->
-<div id="callingBanner" class="bg-yellow-500 text-black text-center text-3xl font-bold py-4 mb-8 rounded-xl">
-    MENUNGGU PANGGILAN...
-</div>
+        <!-- ================= CURRENT CALL BANNER ================= -->
+        <div id="callingBanner"
+            class="bg-white/80 backdrop-blur-md text-purple-600 text-center text-3xl md:text-4xl font-black py-8 mb-12 rounded-3xl shadow-xl border-2 border-purple-200 animate-pulse">
+            MENUNGGU PANGGILAN...
+        </div>
 
-<!-- ================= MULTI LOKET ================= -->
-<div class="grid grid-cols-3 gap-8 mb-12">
+        <!-- ================= MULTI LOKET ================= -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div id="loket1"
+                class="bg-white/70 backdrop-blur-sm p-8 rounded-3xl text-center border border-purple-100 shadow-sm transition hover:shadow-md">
+            </div>
+            <div id="loket2"
+                class="bg-white/70 backdrop-blur-sm p-8 rounded-3xl text-center border border-blue-100 shadow-sm transition hover:shadow-md">
+            </div>
+            <div id="loket3"
+                class="bg-white/70 backdrop-blur-sm p-8 rounded-3xl text-center border border-indigo-100 shadow-sm transition hover:shadow-md">
+            </div>
+            <div id="loket4"
+                class="bg-white/70 backdrop-blur-sm p-8 rounded-3xl text-center border border-purple-100 shadow-sm transition hover:shadow-md">
+            </div>
+        </div>
 
-    <div id="loket1" class="bg-gray-900 p-8 rounded-xl text-center"></div>
-    <div id="loket2" class="bg-gray-900 p-8 rounded-xl text-center"></div>
-    <div id="loket3" class="bg-gray-900 p-8 rounded-xl text-center"></div>
+        <!-- ================= LIST SECTION ================= -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- WAITING -->
+            <div class="bg-white/60 backdrop-blur-sm p-8 rounded-3xl border border-yellow-100 shadow-sm">
+                <h2 class="text-2xl font-bold mb-6 text-yellow-600 flex items-center gap-2">
+                    <span class="w-3 h-3 bg-yellow-400 rounded-full"></span>
+                    Waiting List
+                </h2>
+                <div id="waitingList" class="space-y-3 text-xl font-medium"></div>
+            </div>
 
-</div>
-
-<!-- ================= LIST SECTION ================= -->
-<div class="grid grid-cols-2 gap-8">
-
-    <!-- WAITING -->
-    <div class="bg-gray-900 p-6 rounded-xl">
-        <h2 class="text-2xl mb-4 text-yellow-300">Waiting</h2>
-        <div id="waitingList" class="space-y-2 text-lg"></div>
+            <!-- COMPLETED -->
+            <div class="bg-white/60 backdrop-blur-sm p-8 rounded-3xl border border-green-100 shadow-sm">
+                <h2 class="text-2xl font-bold mb-6 text-green-600 flex items-center gap-2">
+                    <span class="w-3 h-3 bg-green-400 rounded-full"></span>
+                    Recently Completed
+                </h2>
+                <div id="completedList" class="space-y-3 text-xl font-medium"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- COMPLETED -->
-    <div class="bg-gray-900 p-6 rounded-xl">
-        <h2 class="text-2xl mb-4 text-green-300">Completed</h2>
-        <div id="completedList" class="space-y-2 text-lg"></div>
-    </div>
+    <script>
 
-</div>
+        let lastGlobalCalledId = null;
 
-<script>
+        setInterval(loadDisplay, 2000);
+        loadDisplay();
 
-let lastCalledPerLoket = {1:null,2:null,3:null};
-let lastGlobalCalledId = null;
+        function loadDisplay() {
+            fetch('/api/queues')
+                .then(res => res.json())
+                .then(data => {
 
-setInterval(loadDisplay,2000);
-loadDisplay();
+                    /* ================= GLOBAL CALLING BANNER ================= */
 
-function loadDisplay(){
-fetch('/api/queues')
-.then(res=>res.json())
-.then(data=>{
+                    const latestCalled = data
+                        .filter(q => q.status === 'called')
+                        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
 
-/* ================= GLOBAL CALLING BANNER ================= */
+                    if (latestCalled) {
 
-const latestCalled = data
-    .filter(q=>q.status==='called')
-    .sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];
+                        document.getElementById('callingBanner').innerHTML =
+                            `IS CALLING: ${latestCalled.name} - LOKET ${latestCalled.loket}`;
 
-if(latestCalled){
+                        if (lastGlobalCalledId !== latestCalled.id) {
+                            lastGlobalCalledId = latestCalled.id;
+                            speakName(latestCalled.name, latestCalled.queue_number, latestCalled.loket);
+                        }
 
-    document.getElementById('callingBanner').innerHTML =
-        `IS CALLING: ${latestCalled.name} - LOKET ${latestCalled.loket}`;
+                    } else {
+                        document.getElementById('callingBanner').innerHTML =
+                            `MENUNGGU PANGGILAN...`;
+                    }
 
-    if(lastGlobalCalledId !== latestCalled.id){
-        lastGlobalCalledId = latestCalled.id;
-        speakName(latestCalled.name, latestCalled.loket);
-    }
+                    /* ================= MULTI LOKET ================= */
 
-}else{
-    document.getElementById('callingBanner').innerHTML =
-        `MENUNGGU PANGGILAN...`;
-}
+                    [1, 2, 3, 4].forEach(loket => {
 
-/* ================= MULTI LOKET ================= */
+                        const active = data
+                            .filter(q => q.status === 'called' && Number(q.loket) === loket)
+                            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
 
-[1,2,3].forEach(loket=>{
+                        const container = document.getElementById(`loket${loket}`);
 
-    const active = data
-        .filter(q=>q.status==='called' && Number(q.loket) === loket)
-        .sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];
+                        if (active) {
 
-    const container = document.getElementById(`loket${loket}`);
-
-    if(active){
-
-        container.innerHTML = `
-            <h2 class="text-2xl mb-4 text-yellow-400">
+                            container.innerHTML = `
+            <h2 class="text-sm font-black mb-4 text-purple-400 uppercase tracking-widest">
                 LOKET ${loket}
             </h2>
-            <div class="text-5xl font-bold animate-pop">
+            <div class="text-5xl font-black text-gray-800 animate-pop mb-2">
                 ${active.name}
             </div>
-            <div class="text-xl mt-2 text-gray-400">
+            <div class="text-2xl font-bold py-2 px-4 bg-purple-50 text-purple-600 rounded-2xl inline-block shadow-inner">
                 ${active.queue_number}
             </div>
         `;
 
-    }else{
+                        } else {
 
-        container.innerHTML = `
-            <h2 class="text-2xl mb-4 text-gray-400">
+                            container.innerHTML = `
+            <h2 class="text-sm font-black mb-4 text-gray-300 uppercase tracking-widest">
                 LOKET ${loket}
             </h2>
-            <div class="text-3xl text-gray-600">
-                Kosong
+            <div class="text-3xl font-bold text-gray-200">
+                OFFLINE
             </div>
         `;
-    }
+                        }
 
-});
+                    });
 
-/* ================= WAITING ================= */
+                    /* ================= WAITING ================= */
 
-const waiting = data.filter(q=>q.status==='waiting');
+                    const waiting = data.filter(q => q.status === 'waiting');
 
-document.getElementById('waitingList').innerHTML =
-waiting.length
-? waiting.map(q=>`
-    <div class="border-b border-gray-700 pb-1">
-        ${q.queue_number} - ${q.name}
+                    document.getElementById('waitingList').innerHTML =
+                        waiting.length
+                            ? waiting.map(q => `
+    <div class="bg-white/50 p-4 rounded-2xl mb-2 flex justify-between items-center shadow-sm">
+        <span class="text-gray-500 font-bold">${q.queue_number}</span>
+        <span class="text-gray-800 font-black">${q.name}</span>
     </div>
 `).join('')
-: `<div class="text-gray-500">Tidak ada antrian</div>`;
+                            : `<div class="text-gray-400 italic text-center py-4">No one in line</div>`;
 
 
-/* ================= COMPLETED ================= */
+                    /* ================= COMPLETED ================= */
 
-const completed = data
-    .filter(q=>q.status==='completed')
-    .slice(-5)
-    .reverse();
+                    const completed = data
+                        .filter(q => q.status === 'completed')
+                        .slice(-5)
+                        .reverse();
 
-document.getElementById('completedList').innerHTML =
-completed.length
-? completed.map(q=>`
-    <div class="border-b border-gray-700 pb-1">
-        ${q.queue_number} - ${q.name}
+                    document.getElementById('completedList').innerHTML =
+                        completed.length
+                            ? completed.map(q => `
+    <div class="bg-white/50 p-4 rounded-2xl mb-2 flex justify-between items-center opacity-70">
+        <span class="text-gray-400 font-bold">${q.queue_number}</span>
+        <span class="text-gray-600 font-bold">${q.name}</span>
     </div>
 `).join('')
-: `<div class="text-gray-500">Belum ada selesai</div>`;
+                            : `<div class="text-gray-400 italic text-center py-4">No history yet</div>`;
 
-});
-}
+                });
+        }
 
 
-/* ================= VOICE ================= */
+        /* ================= VOICE ================= */
 
-function speakName(name,loket){
-    const msg=new SpeechSynthesisUtterance(
-        "Saudara "+name+", silakan menuju ke loket "+loket
-    );
-    msg.lang='id-ID';
-    msg.rate=0.9;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(msg);
-}
+        /* ================= EXPERT AUDIO ENGINE ================= */
 
-</script>
+        /* ================= EXPERT AUDIO ENGINE ================= */
+
+        /* ================= BULLETPROOF UNIVERSAL AUDIO ENGINE ================= */
+
+        // 🌍 GLOBAL LANGUAGE TRIGGER (V5)
+        let activeLang = localStorage.getItem('queue_lang') || 'ID';
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'queue_lang') {
+                activeLang = e.newValue;
+                console.log("V5 Engine: Display Syncing Language ->", activeLang);
+            }
+        });
+
+        function speakName(name, number, loket) {
+            // 🔍 DYNAMIC LANGUAGE CHECK
+            const currentLang = localStorage.getItem('queue_lang') || 'ID';
+            window.speechSynthesis.cancel();
+
+            let message = "";
+            let speechLang = "id-ID";
+
+            if (currentLang === 'EN') {
+                message = `Calling for ${name}, queue number ${number}, please proceed to counter ${loket}.`;
+                speechLang = "en-US";
+            } else if (currentLang === 'ZH') {
+                message = `请 ${name}, ${number} 号, 到 ${loket} 号窗口.`;
+                speechLang = "zh-CN";
+            } else {
+                const formatPhonetic = (str) => {
+                    return str.toString().split('').map(char => {
+                        if (char === '0') return 'kosong';
+                        return char;
+                    }).join(', ');
+                };
+                const phoneticNumber = formatPhonetic(number);
+                message = `Panggilan untuk saudara, ${name}. Nomor antrian, ${phoneticNumber}. Silakan menuju ke, loket ${loket}.`;
+                speechLang = "id-ID";
+            }
+
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            utterance.lang = speechLang;
+
+            const setVoice = () => {
+                const voices = window.speechSynthesis.getVoices();
+                let chosenVoice = null;
+
+                if (currentLang === 'EN') {
+                    chosenVoice = voices.find(v => v.lang.toLowerCase().includes("en-us") && (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural")))
+                        || voices.find(v => v.lang.toLowerCase().includes("en-us"));
+                } else if (currentLang === 'ZH') {
+                    chosenVoice = voices.find(v => v.lang.toLowerCase().includes("zh-cn") && (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural")))
+                        || voices.find(v => v.lang.toLowerCase().includes("zh-cn"));
+                } else {
+                    const idVoices = voices.filter(v => v.lang.toLowerCase().includes("id-id") || v.lang.toLowerCase().includes("id_id"));
+                    chosenVoice = idVoices.find(v => {
+                        const n = v.name.toLowerCase();
+                        return (n.includes("gadis") || n.includes("natural") || n.includes("online")) && !n.includes("andika");
+                    }) || idVoices.find(v => {
+                        const n = v.name.toLowerCase();
+                        return (n.includes("google") || n.includes("siti") || n.includes("female")) && !n.includes("andika");
+                    }) || idVoices.find(v => !v.name.toLowerCase().includes("andika")) || idVoices[0];
+                }
+
+                if (chosenVoice) {
+                    utterance.voice = chosenVoice;
+                    console.log(`V5.1 Engine Display: [${currentLang}] Selected -`, chosenVoice.name);
+                }
+
+                window.speechSynthesis.speak(utterance);
+            };
+
+            if (window.speechSynthesis.getVoices().length > 0) {
+                setVoice();
+            } else {
+                window.speechSynthesis.onvoiceschanged = setVoice;
+            }
+        }
+
+    </script>
 
 </body>
+
 </html>

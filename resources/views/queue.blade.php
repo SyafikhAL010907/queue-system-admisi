@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="relative flex items-center justify-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight text-center">
+        <div class="relative flex items-center justify-between">
+            <h2 class="font-bold text-2xl text-purple-600 leading-tight">
                 {{ __('Manajemen Antrian Admisi') }}
             </h2>
-            <div class="absolute right-0 flex gap-4">
+            <div class="flex gap-4">
                 <a href="/display" target="_blank"
-                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition text-sm">
+                    class="bg-gradient-to-r from-purple-200 to-blue-200 text-gray-800 px-5 py-2.5 rounded-xl transition shadow-sm font-semibold hover:shadow-md active:scale-95 text-sm border border-purple-100">
                     Lihat Display
                 </a>
             </div>
@@ -21,12 +21,12 @@
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: scale(0.98) translateY(10px);
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: scale(1) translateY(0);
             }
         }
     </style>
@@ -35,36 +35,54 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 fade-in">
 
             <!-- STATS COUNTER -->
-            <div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6 text-center"></div>
+            <div id="stats" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center"></div>
 
             <!-- FORM TAMBAH -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm mb-6 text-gray-900 dark:text-gray-100">
-                <h3 class="text-lg font-semibold mb-4 text-center">Tambah Antrian Baru</h3>
-                <form id="addForm" class="flex flex-col md:flex-row gap-3">
+            <div class="bg-white/70 backdrop-blur-sm p-8 rounded-2xl border border-purple-100 shadow-sm mb-8">
+                <h3 class="text-xl font-bold mb-6 text-gray-700">Tambah Antrian Baru</h3>
+                <form id="addForm" class="flex flex-col md:flex-row items-center gap-4">
                     <input type="text" name="name" placeholder="Nama Customer"
-                        class="border border-gray-300 dark:border-gray-700 dark:bg-gray-900 p-3 rounded-xl w-full focus:ring-2 focus:ring-blue-400 outline-none"
+                        class="border border-purple-100 bg-white/50 p-4 rounded-2xl w-full focus:ring-4 focus:ring-purple-200 focus:border-purple-300 outline-none transition"
                         required>
-                    <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition whitespace-nowrap">
-                        Tambah Data
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="submit"
+                            class="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-8 py-4 rounded-2xl transition shadow-md font-bold whitespace-nowrap active:scale-95">
+                            Tambah Data
+                        </button>
+
+                        <!-- 🌍 GLOBAL LANGUAGE TRIGGER (V5) -->
+                        <div class="flex bg-gray-100 p-1 rounded-2xl gap-1 shadow-inner border border-gray-200">
+                            <button type="button" onclick="setLanguage('ID')" data-lang="ID"
+                                class="lang-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white shadow-sm ring-1 ring-purple-300">
+                                🇮🇩 ID
+                            </button>
+                            <button type="button" onclick="setLanguage('EN')" data-lang="EN"
+                                class="lang-btn px-3 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/50">
+                                🇺🇸 EN
+                            </button>
+                            <button type="button" onclick="setLanguage('ZH')" data-lang="ZH"
+                                class="lang-btn px-3 py-2 rounded-xl text-xs font-bold transition-all hover:bg-white/50">
+                                🇨🇳 ZH
+                            </button>
+                        </div>
+                    </div>
                 </form>
             </div>
 
             <!-- TABLE MANAJEMEN -->
-            <div
-                class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden text-gray-900 dark:text-gray-100">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-100 dark:bg-gray-700">
+            <div class="bg-white/70 backdrop-blur-sm rounded-3xl shadow-sm border border-blue-50 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gradient-to-r from-purple-50 to-blue-50">
                         <tr>
-                            <th class="p-4 font-semibold text-gray-700 dark:text-gray-300">#</th>
-                            <th class="p-4 font-semibold text-gray-700 dark:text-gray-300">Queue</th>
-                            <th class="p-4 font-semibold text-gray-700 dark:text-gray-300">Name</th>
-                            <th class="p-4 font-semibold text-gray-700 dark:text-gray-300">Status</th>
-                            <th class="p-4 font-semibold text-gray-700 dark:text-gray-300 text-center">Action</th>
+                            <th class="p-5 font-bold text-gray-600 text-sm uppercase tracking-wider">#</th>
+                            <th class="p-5 font-bold text-gray-600 text-sm uppercase tracking-wider">Queue</th>
+                            <th class="p-5 font-bold text-gray-600 text-sm uppercase tracking-wider">Name</th>
+                            <th class="p-5 font-bold text-gray-600 text-sm uppercase tracking-wider">Status</th>
+                            <th class="p-5 font-bold text-gray-600 text-sm uppercase tracking-wider text-center">Action
+                            </th>
                         </tr>
                     </thead>
-                    <tbody id="queueTable">
+                    <tbody id="queueTable" class="divide-y divide-purple-50">
                         <!-- Loading placeholder atau data awal jika ada -->
                     </tbody>
                 </table>
@@ -97,28 +115,45 @@
                         if (q.status === 'completed' || q.status === 'canceled') return;
 
                         html += `
-                    <tr class="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 fade-in">
-                        <td class="p-4">${i + 1}</td>
-                        <td class="p-4 font-bold">${q.queue_number}</td>
-                        <td class="p-4">${q.name}</td>
-                        <td class="p-4 capitalize">${q.status}</td>
-                        <td class="p-4 flex flex-wrap gap-2 justify-center">
-                            <button onclick="callQueue(${q.id}, '${q.name}', 1)" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs transition">Call L1</button>
-                            <button onclick="callQueue(${q.id}, '${q.name}', 2)" class="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded text-xs transition">Call L2</button>
-                            <button onclick="callQueue(${q.id}, '${q.name}', 3)" class="bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded text-xs transition">Call L3</button>
-                            <button onclick="updateStatus(${q.id},'completed')" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs transition">Done</button>
-                            <button onclick="updateStatus(${q.id},'canceled')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition">Cancel</button>
+                    <tr class="hover:bg-purple-50/50 transition duration-300 group fade-in">
+                        <td class="p-5 text-gray-500">${i + 1}</td>
+                        <td class="p-5 font-bold text-purple-700">${q.queue_number}</td>
+                        <td class="p-5 font-medium">${q.name}</td>
+                        <td class="p-5">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase ${q.status === 'called' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'}">
+                                ${q.status}
+                            </span>
+                        </td>
+                        <td class="p-5 flex flex-wrap gap-2 justify-center">
+                            <button onclick="callQueue(${q.id}, '${q.name}', '${q.queue_number}', 1)" class="bg-white border border-blue-200 hover:bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm active:scale-95">Call L1</button>
+                            <button onclick="callQueue(${q.id}, '${q.name}', '${q.queue_number}', 2)" class="bg-white border border-purple-200 hover:bg-purple-50 text-purple-600 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm active:scale-95">Call L2</button>
+                            <button onclick="callQueue(${q.id}, '${q.name}', '${q.queue_number}', 3)" class="bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm active:scale-95">Call L3</button>
+                            <button onclick="callQueue(${q.id}, '${q.name}', '${q.queue_number}', 4)" class="bg-white border border-purple-200 hover:bg-purple-50 text-purple-600 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm active:scale-95">Call L4</button>
+                            <button onclick="updateStatus(${q.id},'completed')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-md active:scale-95">Done</button>
+                            <button onclick="updateStatus(${q.id},'canceled')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold transition active:scale-95">Cancel</button>
                         </td>
                     </tr>`;
                     });
 
-                    document.getElementById('queueTable').innerHTML = html || '<tr><td colspan="5" class="p-4 text-center text-gray-500">Antrian kosong.</td></tr>';
+                    document.getElementById('queueTable').innerHTML = html || '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">Antrian sedang kosong saat ini.</td></tr>';
 
                     document.getElementById('stats').innerHTML = `
-                    <div class="bg-yellow-100 dark:bg-yellow-900/30 p-4 rounded-xl border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200">Waiting<br><b class="text-2xl">${waiting}</b></div>
-                    <div class="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-xl border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200">Called<br><b class="text-2xl">${called}</b></div>
-                    <div class="bg-green-100 dark:bg-green-900/30 p-4 rounded-xl border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200">Completed<br><b class="text-2xl">${completed}</b></div>
-                    <div class="bg-red-100 dark:bg-red-900/30 p-4 rounded-xl border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200">Canceled<br><b class="text-2xl">${canceled}</b></div>
+                    <div class="bg-white p-6 rounded-3xl border border-yellow-100 shadow-sm transition hover:shadow-md">
+                        <span class="text-xs font-bold uppercase tracking-widest text-yellow-600 mb-1 block">Waiting</span>
+                        <b class="text-4xl text-gray-800">${waiting}</b>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-blue-100 shadow-sm transition hover:shadow-md">
+                        <span class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-1 block">Called</span>
+                        <b class="text-4xl text-gray-800">${called}</b>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-green-100 shadow-sm transition hover:shadow-md">
+                        <span class="text-xs font-bold uppercase tracking-widest text-green-600 mb-1 block">Completed</span>
+                        <b class="text-4xl text-gray-800">${completed}</b>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-red-100 shadow-sm transition hover:shadow-md">
+                        <span class="text-xs font-bold uppercase tracking-widest text-red-600 mb-1 block">Canceled</span>
+                        <b class="text-4xl text-gray-800">${canceled}</b>
+                    </div>
                 `;
                 });
         }
@@ -169,15 +204,114 @@
             });
         }
 
-        // 🔊 VOICE
-        function speakQueue(name, loket) {
-            const msg = new SpeechSynthesisUtterance(`Saudara ${name}, silakan menuju ke loket ${loket}`);
-            msg.lang = "id-ID";
-            msg.rate = 0.9;
-            window.speechSynthesis.speak(msg);
+        // 🔊 INDONESIAN PHONETIC AUDIO ENGINE (V3 - BULLETPROOF)
+        // 🌍 GLOBAL LANGUAGE TRIGGER (V5)
+        let activeLang = localStorage.getItem('queue_lang') || 'ID';
+
+        function setLanguage(lang) {
+            activeLang = lang;
+            localStorage.setItem('queue_lang', lang);
+            updateLangUI(lang);
+            console.log("V5 Engine: Language Triggered ->", lang);
         }
 
-        function callQueue(id, name, loket) {
+        function updateLangUI(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                const isActive = btn.dataset.lang === lang;
+                btn.classList.toggle('bg-white', isActive);
+                btn.classList.toggle('shadow-sm', isActive);
+                btn.classList.toggle('ring-1', isActive);
+                btn.classList.toggle('ring-purple-300', isActive);
+                if (!isActive) {
+                    btn.classList.add('hover:bg-white/50');
+                } else {
+                    btn.classList.remove('hover:bg-white/50');
+                }
+            });
+        }
+
+        // 🔄 CROSS-TAB SYNC
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'queue_lang') {
+                activeLang = e.newValue;
+                updateLangUI(activeLang);
+                console.log("V5 Engine: Syncing Language ->", activeLang);
+            }
+        });
+
+        // 🔊 INDONESIAN PHONETIC AUDIO ENGINE (V5.1 - DYNAMIC)
+        function speakQueue(name, number, loket) {
+            // 🔍 DYNAMIC LANGUAGE CHECK
+            const currentLang = localStorage.getItem('queue_lang') || 'ID';
+            window.speechSynthesis.cancel();
+
+            let message = "";
+            let speechLang = "id-ID";
+
+            if (currentLang === 'EN') {
+                message = `Calling for ${name}, queue number ${number}, please proceed to counter ${loket}.`;
+                speechLang = "en-US";
+            } else if (currentLang === 'ZH') {
+                message = `请 ${name}, ${number} 号, 到 ${loket} 号窗口.`;
+                speechLang = "zh-CN";
+            } else {
+                // Default ID
+                const formatPhonetic = (str) => {
+                    return str.toString().split('').map(char => {
+                        if (char === '0') return 'kosong';
+                        return char;
+                    }).join(', ');
+                };
+                const phoneticNumber = formatPhonetic(number);
+                message = `Panggilan untuk saudara, ${name}. Nomor antrian, ${phoneticNumber}. Silakan menuju ke, loket ${loket}.`;
+                speechLang = "id-ID";
+            }
+
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            utterance.lang = speechLang;
+
+            const setVoice = () => {
+                const voices = window.speechSynthesis.getVoices();
+                let chosenVoice = null;
+
+                if (activeLang === 'EN') {
+                    chosenVoice = voices.find(v => v.lang.toLowerCase().includes("en-us") && (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural")))
+                        || voices.find(v => v.lang.toLowerCase().includes("en-us"));
+                } else if (activeLang === 'ZH') {
+                    chosenVoice = voices.find(v => v.lang.toLowerCase().includes("zh-cn") && (v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural")))
+                        || voices.find(v => v.lang.toLowerCase().includes("zh-cn"));
+                } else {
+                    const idVoices = voices.filter(v => v.lang.toLowerCase().includes("id-id") || v.lang.toLowerCase().includes("id_id"));
+                    chosenVoice = idVoices.find(v => {
+                        const n = v.name.toLowerCase();
+                        return (n.includes("gadis") || n.includes("natural") || n.includes("online")) && !n.includes("andika");
+                    }) || idVoices.find(v => {
+                        const n = v.name.toLowerCase();
+                        return (n.includes("google") || n.includes("siti") || n.includes("female")) && !n.includes("andika");
+                    }) || idVoices.find(v => !v.name.toLowerCase().includes("andika")) || idVoices[0];
+                }
+
+                if (chosenVoice) {
+                    utterance.voice = chosenVoice;
+                    console.log(`V5.1 Engine Queue: [${currentLang}] Selected -`, chosenVoice.name);
+                }
+
+                window.speechSynthesis.speak(utterance);
+            };
+
+            if (window.speechSynthesis.getVoices().length > 0) {
+                setVoice();
+            } else {
+                window.speechSynthesis.onvoiceschanged = setVoice;
+            }
+        }
+
+        // Init UI
+        updateLangUI(activeLang);
+
+        function callQueue(id, name, number, loket) {
             fetch('/api/queues')
                 .then(res => res.json())
                 .then(data => {
@@ -197,7 +331,7 @@
                         body: JSON.stringify({ loket: loket })
                     })
                         .then(() => {
-                            speakQueue(name, loket);
+                            speakQueue(name, number, loket);
                             Swal.fire({
                                 title: 'Dipanggil!',
                                 text: `Antrian dipanggil ke Loket ${loket}`,
